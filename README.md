@@ -1,1 +1,3 @@
-# QuHack-AlexFreedline-
+# Algorythms
+
+Generate music with a quantum computer!
