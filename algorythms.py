@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import dimod
+from dimod import ExactSolver
 import dwave_networkx as dnx
 from dwave.system import LeapHybridSampler
 
@@ -46,13 +46,25 @@ def cli():
             'name': 'duration',
             'message': 'Song duration (in seconds)?',
             'default': '30'
-        }
+        },
+        {
+        'type': 'rawlist',
+        'name': 'sampler',
+        'message': 'Which solver do you want to use?',
+        'choices': ['Local', 'Leap']
+    },
     ]
 
     answers = prompt(questions, style=style)
 
     file = str(answers['title']) + ".midi"
     duration = int(answers['duration'])
+
+    samplers = {
+        'Local': ExactSolver,
+        'Leap': LeapHybridSampler
+    }
+    sampler = samplers[answers['sampler']]
 
     bpm = 90
     number_notes = int(bpm * 1/60 * duration)    # beats per second
@@ -71,7 +83,8 @@ def cli():
 
     start = random.choice(vertices)
 
-    track = generate_progression_sequence(potentials, start, number_notes)
+    print('Sending to sampler...')
+    track = generate_progression_sequence(potentials, start, number_notes, sampler)
 
     play_track(track, file, bpm)
 
@@ -88,7 +101,7 @@ def find_next_state(samples):
         return random.choice(low_energy_states)
 
 
-def generate_progression_sequence(potentials, start, length):
+def generate_progression_sequence(potentials, start, length, solver):
     '''
     Generate a sequence of notes
 
@@ -97,7 +110,7 @@ def generate_progression_sequence(potentials, start, length):
     length: length of sequence
     '''
     network = dnx.markov_network(potentials)
-    sampler = sampler = dimod.ExactSolver()
+    sampler = solver()#LeapHybridSampler()#dimod.ExactSolver()
     sequence = [start]
 
     edges = list(potentials.keys())
@@ -116,8 +129,12 @@ def generate_progression_sequence(potentials, start, length):
             sampler,
             fixed_variables
             )
+        progress = int(i/length * 100)
+        if progress != 0:
+            print(str(progress) + "%")
         current = find_next_state(samples)
         sequence.append(current)
+    print('100%')
 
     return sequence
 
