@@ -15,8 +15,10 @@ The creation of good music has been a coveted talent for centuries. Making a goo
 Our primary goal was to use quantum computing to create something amazing. We decided on music because we had not heard of anyone using quantum annealing to optimize the creation of music.
 
 #Setup#
+Ocean setup
+
 Install dependencies
-``
+`pip install -r requirements.txt`
 
 Make script executable
 `chmod +x algorythms.py`

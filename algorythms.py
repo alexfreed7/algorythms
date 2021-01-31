@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import dimod
 import dwave_networkx as dnx
+from dwave.system import LeapHybridSampler
+
 import numpy as np
 import random
 
@@ -95,7 +97,7 @@ def generate_progression_sequence(potentials, start, length):
     length: length of sequence
     '''
     network = dnx.markov_network(potentials)
-    sampler = dimod.ExactSolver()
+    sampler = sampler = dimod.ExactSolver()
     sequence = [start]
 
     edges = list(potentials.keys())
