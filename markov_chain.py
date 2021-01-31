@@ -1,49 +1,51 @@
 import dimod
 import dwave_networkx as dnx
+import numpy as np
+
+import mingus.core.progressions as progressions
+from mingus.containers import NoteContainer
+from mingus.midi import fluidsynth
+
+SF2 = ""#"Nice-Steinway-v3.8.sf2"
+
 potentials = {
-    ('c', 'd'): {
+    ("I", "II"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-    ('c', 'e'): {
+    ("I", "III"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-    ('c', 'f'): {
+    ("I", "IV"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-    ('c', 'g'): {
+    ("I", "V"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-    ('c', 'g7'): {
+    ("I", "V7"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-    ('c', 'a'): {
+    ("I", "VI"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-    ('c', 'b'): {
-        (0, 0): 0,
-        (0, 1): 1,
-        (1, 0): 1,
-        (1, 1): 0,
-    },
-    ('c', 'c2'): {
+    ("I", "VIIdim7"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
@@ -51,37 +53,31 @@ potentials = {
     },
 
 
-    ('d', 'f'): {
+    ("II", "IV"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-    ('d', 'g'): {
+    ("II", "V"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-    ('d', 'g7'): {
+    ("II", "V7"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-    ('d', 'a'): {
+    ("II", "VI"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-    ('d', 'b'): {
-        (0, 0): 0,
-        (0, 1): 1,
-        (1, 0): 1,
-        (1, 1): 0,
-    },
-    ('d', 'c2'): {
+    ("II", "VIIdim7"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
@@ -90,138 +86,106 @@ potentials = {
 
 
 
-    ('e', 'f'): {
+    ("III", "IV"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-    ('e', 'g'): {
+    ("III", "V"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-    ('e', 'g7'): {
+    ("III", "V7"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-    ('e', 'a'): {
+    ("III", "VI"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-    ('e', 'b'): {
+    ("III", "VIIdim7"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-    ('e', 'c2'): {
+    ("IV", "V"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-
-
-
-    ('f', 'g'): {
+    ("IV", "V7"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-    ('f', 'g7'): {
+    ("IV", "VI"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-    ('f', 'a'): {
-        (0, 0): 0,
-        (0, 1): 1,
-        (1, 0): 1,
-        (1, 1): 0,
-    },
-    ('f', 'b'): {
-        (0, 0): 0,
-        (0, 1): 1,
-        (1, 0): 1,
-        (1, 1): 0,
-    },
-    ('f', 'c2'): {
+    ("IV", "VIIdim7"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
 
-    ('g', 'g7'): {
+    ("V", "V7"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-    ('g', 'a'): {
+    ("V", "VI"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
-    },('g', 'b'): {
-        (0, 0): 0,
-        (0, 1): 1,
-        (1, 0): 1,
-        (1, 1): 0,
-    },('g', 'c2'): {
+    },("V", "VIIdim7"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
 
-    ('g7', 'a'): {
+    ("V7", "VI"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
-    ('g7', 'b'): {
-        (0, 0): 0,
-        (0, 1): 1,
-        (1, 0): 1,
-        (1, 1): 0,
-    },
-    ('g7', 'c2'): {
+    ("V7", "VIIdim7"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
 
-    ('a', 'b'): {
-        (0, 0): 0,
-        (0, 1): 1,
-        (1, 0): 1,
-        (1, 1): 0,
-    },
-    ('a', 'c2'): {
-        (0, 0): 0,
-        (0, 1): 1,
-        (1, 0): 1,
-        (1, 1): 0,
-    },
-
-    ('b', 'c2'): {
+    ("VI", "VIIdim7"): {
         (0, 0): 0,
         (0, 1): 1,
         (1, 0): 1,
         (1, 1): 0,
     },
 }
+
+progression = ["I", "IV", "V7"]
+c = progressions.to_chords(progression, "C")
+
+if not fluidsynth.init(SF2):
+    print("Couldn't load soundfont", SF2)
+
 
 def find_next_state(samples):
     '''
@@ -238,7 +202,7 @@ def find_next_state(samples):
         if total_sum == 1:
             return keys[0]
 
-def generate_note_sequence(potentials, start, length):
+def generate_progression_sequence(potentials, start, length):
     '''
     Generate a sequence of notes
 
@@ -259,4 +223,11 @@ def generate_note_sequence(potentials, start, length):
 
     return sequence
 
-print(generate_note_sequence(potentials, 'b', 10))
+track = generate_progression_sequence(potentials, "VIIdim7", 10)
+
+print("TRACK: ", track)
+
+def play_track(track, channel=8, velocity=50):
+    for progression in track:
+        chord = NoteContainer(progressions.to_chords(progression, "C"))
+        fluidsynth.play_NoteContainer(chord, channel, velocity)
