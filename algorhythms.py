@@ -29,10 +29,10 @@ def cli():
 
 
     f = Figlet(font='slant')
-    print(f.renderText('Algorythms'))
+    print(f.renderText('Algorhythms'))
 
     print('Generate music with a quantum computer!\n')
-    print('Your song will be coming straight from d-wave quantum processing units!\n')
+    print('Your song will be coming straight from D-Wave quantum processing units!\n')
 
     questions = [
         {

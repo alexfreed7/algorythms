@@ -100,10 +100,10 @@ Then, install dependencies:
 `$ pip install -r requirements.txt`
 
 Optionally, you make the script executable:
-`$ chmod +x algorythms.py`
+`$ chmod +x algorhythms.py`
 
 Now the CLI!
-`$ ./algorythms.py`
+`$ ./algorhythms.py`
 
 ## Next Steps
 We would like to add rhythm and melody to the generated chords, and explore more complex stochastic processes for generating music!
