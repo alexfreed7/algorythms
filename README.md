@@ -12,6 +12,8 @@ Our primary goal was to use quantum computing to create something amazing. We de
 
 On a more technical note, we sought to successfully implement Random Walk on a quantum annealer, which has not been done yet. This opens the door for more computationally heaving stochastic processes to be implemented on quantum annealers.
 
+paper: https://projecteuclid.org/download/pdfview_1/euclid.ss/1475001234
+
 ## Background
 
 ### Some Music Theory
@@ -113,3 +115,4 @@ We would like to add rhythm and melody to the generated chords, and explore more
 - [Markov Chains and Random Walks](https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-262-discrete-stochastic-processes-spring-2011/video-lectures/lecture-20-markov-processes-and-random-walks/MIT6_262S11_lec20.pdf)
 - The [dwave_networkx](https://docs.ocean.dwavesys.com/en/stable/docs_dnx/sdk_index.html) package
 - [Markov Random Fields](https://ermongroup.github.io/cs228-notes/representation/undirected/) and [optimization](http://homepages.inf.ed.ac.uk/rbf/CVonline/LOCAL_COPIES/AV0809/ORCHARD/)
+- [Quantum Annealing with Markov Chain Monte Carlo Simulations and D-Wave Quantum Computers](https://projecteuclid.org/download/pdfview_1/euclid.ss/1475001234)
