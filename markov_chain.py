@@ -1,7 +1,7 @@
 import dimod
 import dwave_networkx as dnx
 import numpy as np
-
+import mingus 
 import mingus.core.progressions as progressions
 from mingus.containers import NoteContainer
 from mingus.midi import fluidsynth
@@ -223,7 +223,7 @@ def generate_progression_sequence(potentials, start, length):
 
     return sequence
 
-track = generate_progression_sequence(potentials, "VIIdim7", 10)
+track = generate_progression_sequence(potentials, "I", 10)
 
 print("TRACK: ", track)
 
