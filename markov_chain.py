@@ -9,40 +9,71 @@ from mingus.midi import midi_file_out
 
 import matplotlib.pyplot as plt
 import networkx as nx
+
 from pyfiglet import Figlet
-
-f = Figlet(font='slant')
-print(f.renderText('Algorythms'))
-
-file = "test.midi"
+from PyInquirer import style_from_dict, Token, prompt
 
 graph_edges = [('I', 'II'), ('I', 'III'), ('I', 'IV'), ('I', 'V'), ('I', 'V'), ('I', 'VI'), ('I', 'VIIdim'), ('II', 'IV'), ('II', 'V'), ('II', 'V'), ('II', 'VI'), ('II', 'VIIdim'), ('III', 'IV'), ('III', 'V'), ('III', 'V'), ('III', 'VI'), ('IV', 'V'), ('IV', 'V'), ('IV', 'VI'), ('V', 'VI'), ('V', 'VI'), ('V', 'VIIdim'), ('VI', 'VIIdim')]
 
-def random_number():
-    return -1**np.random.randint(10) * np.random.rand() * 10
+def cli():
+    style = style_from_dict({
+        Token.QuestionMark: '#E91E63 bold',
+        Token.Selected: '#673AB7 bold',
+        Token.Instruction: '',  # default
+        Token.Answer: '#2196f3 bold',
+        Token.Question: '',
+    })
 
-potentials = {
-    edge: {
-        (0, 0): 10,
-        (0, 1): random_number(),
-        (1, 0): random_number(),
-        (1, 1): 10
-    } for edge in graph_edges
-}
 
-edges = list(potentials.keys())
-vertices = list(set([vertex for edge in edges for vertex in edge]))
+    f = Figlet(font='slant')
+    print(f.renderText('Algorythms'))
 
-# def plot_chords(potentials):
-#
-#     graph = nx.Graph()
-#     graph.add_nodes_from(vertices)
-#     graph.add_edges_from(edges)
-#     nx.draw_circular(graph, with_labels=True)
-#
-#     plt.show()
-#
-# plot_chords(potentials)
+    print('Generate music with a quantum computer!\n')
+    print('Your song will be coming straight from d-wave quantum processing units!\n')
+
+    questions = [
+        {
+            'type': 'input',
+            'name': 'title',
+            'message': 'What should the song be called?',
+            'default': 'My first quantum song!'
+        },
+        {
+            'type': 'input',
+            'name': 'duration',
+            'message': 'Song duration (in seconds)?',
+            'default': '30'
+        }
+    ]
+
+    answers = prompt(questions, style=style)
+
+    file = str(answers['title']) + ".midi"
+    duration = int(answers['duration'])
+
+    bpm = 90
+    number_notes = int(bpm * 1/60 * duration)    # beats per second
+
+    potentials = {
+        edge: {
+            (0, 0): 10,
+            (0, 1): random_number(),
+            (1, 0): random_number(),
+            (1, 1): 10
+        } for edge in graph_edges
+    }
+
+    edges = list(potentials.keys())
+    vertices = list(set([vertex for edge in edges for vertex in edge]))
+
+    start = random.choice(vertices)
+
+    track = generate_progression_sequence(potentials, start, number_notes)
+
+    play_track(track, file, bpm)
+
+    print('Done! Your quantum song can be found in "' + file + '"\n')
+    print('You can open it in MuseScore to listen to it and see the score!')
 
 
 def find_next_state(samples):
@@ -66,9 +97,11 @@ def generate_progression_sequence(potentials, start, length):
     sampler = dimod.ExactSolver()
     sequence = [start]
 
+    edges = list(potentials.keys())
+    vertices = list(set([vertex for edge in edges for vertex in edge]))
+
     current = start
     for i in range(length):
-
         outgoing_edges = [edge for edge in edges if current in edge]
         neighbors = list(set([vertex for edge in outgoing_edges for vertex in edge]))
         non_neighbors = [vertex for vertex in vertices if vertex not in neighbors]
@@ -85,11 +118,8 @@ def generate_progression_sequence(potentials, start, length):
 
     return sequence
 
-track = generate_progression_sequence(potentials, "II", 40)
 
-print("TRACK: ", track)
-
-def play_track(track, channel=8, velocity=100):
+def play_track(track, file, bpm):
     track += "V"
     track += "I"
     song = Track()
@@ -101,6 +131,20 @@ def play_track(track, channel=8, velocity=100):
             chord.add_note(note, dynamics={'velocity': np.random.randint(127)})
         chord.add_note(note, dynamics={'velocity': np.random.randint(127)})
         song.add_notes(chord)
-    midi_file_out.write_Track(file, song, bpm=90)
+    midi_file_out.write_Track(file, song, bpm)
 
-play_track(track)
+def random_number():
+    return -1**np.random.randint(10) * np.random.rand() * 10
+
+def plot_chords(potentials):
+
+    graph = nx.Graph()
+    graph.add_nodes_from(vertices)
+    graph.add_edges_from(edges)
+    nx.draw_circular(graph, with_labels=True)
+
+    plt.show()
+
+
+if __name__ == "__main__":
+    cli()
