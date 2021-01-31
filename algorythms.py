@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import dimod
 import dwave_networkx as dnx
 import numpy as np
