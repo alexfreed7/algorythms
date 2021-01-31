@@ -7,140 +7,156 @@ from mingus.containers import NoteContainer
 from mingus.midi import midi_file_out
 from mingus.containers import Track
 
+import matplotlib.pyplot as plt
+import networkx as nx
+
 file = "test.midi"
 
 potentials = {
     ("I", "II"): {
-        (0, 0): 1,
-        (0, 1): .9,
-        (1, 0): .95,
-        (1, 1): 1},
+        (0, 0): 10,
+        (0, 1): -6,
+        (1, 0): -7.5,
+        (1, 1): 10},
     ("I", "III"): {
-        (0, 0): 1,
-        (0, 1): .9,
-        (1, 0): 1,
-        (1, 1): 1},
+        (0, 0): 10,
+        (0, 1): -5,
+        (1, 0): 0,
+        (1, 1): 10},
     ("I", "IV"): {
-        (0, 0): 1,
-        (0, 1): .75,
-        (1, 0): .75,
-        (1, 1): 1},
+        (0, 0): 10,
+        (0, 1): -7,
+        (1, 0): -7,
+        (1, 1): 10},
     ("I", "V"): {
         (0, 0): 10,
-        (0, 1): .85,
-        (1, 0): .7,
-        (1, 1): 1},
+        (0, 1): -5.5,
+        (1, 0): -5,
+        (1, 1): 10},
     ("I", "V7"): {
-        (0, 0): 1,
-        (0, 1): .95,
-        (1, 0): .7,
-        (1, 1): 1},
+        (0, 0): 10,
+        (0, 1): -7.5,
+        (1, 0): -6,
+        (1, 1): 10},
     ("I", "VI"): {
-        (0, 0): 1,
-        (0, 1): .8,
-        (1, 0): .8,
-        (1, 1): 1},
+        (0, 0): 10,
+        (0, 1): -5,
+        (1, 0): -5,
+        (1, 1): 10},
     ("I", "VIIdim7"): {
-        (0, 0): 1,
-        (0, 1): 1,
-        (1, 0): .85,
-        (1, 1): 1},
-    ("II", "IV"): {
-        (0, 0): 1,
-        (0, 1): .7,
-        (1, 0): .9,
-        (1, 1): 1},
-    ("II", "V"): {
-        (0, 0): 1,
-        (0, 1): .5,
-        (1, 0): .9,
-        (1, 1): 1},
-    ("II", "V7"): {
-        (0, 0): 1,
-        (0, 1): .95,
-        (1, 0): .9,
-        (1, 1): 1},
-    ("II", "VI"): {
-        (0, 0): 1,
-        (0, 1): .95,
-        (1, 0): .6,
-        (1, 1): 1},
-    ("II", "VIIdim7"): {
-        (0, 0): 1,
-        (0, 1): .95,
-        (1, 0): .9,
-        (1, 1): 1},
-    ("III", "IV"): {
-        (0, 0): 1,
-        (0, 1): .75,
-        (1, 0): 10,
-        (1, 1): 1},
-    ("III", "V"): {
-        (0, 0): 1,
-        (0, 1): .75,
-        (1, 0): .95,
-        (1, 1): 1},
-    ("III", "V7"): {
-        (0, 0): 1,
-        (0, 1): .8,
-        (1, 0): .9,
-        (1, 1): 1},
-    ("III", "VI"): {
-        (0, 0): 1,
-        (0, 1): .85,
-        (1, 0): .9,
-        (1, 1): 1},
-    ("IV", "V"): {
-        (0, 0): 1,
-        (0, 1): .7,
-        (1, 0): .9,
-        (1, 1): 1},
-    ("IV", "V7"): {
-        (0, 0): 1,
-        (0, 1): .95,
-        (1, 0):.9,
-        (1, 1): 1},
-    ("IV", "VI"): {
-        (0, 0): 1,
-        (0, 1): .9,
-        (1, 0): .8,
-        (1, 1): 1},
-    ("V", "V7"): {
-        (0, 0): 1,
-        (0, 1): 0.9,
-        (1, 0): 10,
-        (1, 1): 1},
-    ("V", "VI"): {
-        (0, 0): 1,
-        (0, 1): .95,
-        (1, 0): .9,
-        (1, 1): 1},
-    ("V7", "VI"): {
         (0, 0): 10,
         (0, 1): 10,
-        (1, 0): 1,
+        (1, 0): -5.5,
+        (1, 1): 10},
+    ("II", "IV"): {
+        (0, 0): 10,
+        (0, 1): -7,
+        (1, 0): -7.5,
+        (1, 1): 10},
+    ("II", "V"): {
+        (0, 0): 10,
+        (0, 1): 0,
+        (1, 0): -5.5,
+        (1, 1): 10},
+    ("II", "V7"): {
+        (0, 0): 10,
+        (0, 1): -7.5,
+        (1, 0): -7,
+        (1, 1): 10},
+    ("II", "VI"): {
+        (0, 0): 10,
+        (0, 1): -7.5,
+        (1, 0): -2,
+        (1, 1): 10},
+    ("II", "VIIdim7"): {
+        (0, 0): 10,
+        (0, 1): -7.5,
+        (1, 0): -7,
+        (1, 1): 10},
+    ("III", "IV"): {
+        (0, 0): 10,
+        (0, 1): -3,
+        (1, 0): 0,
+        (1, 1): 10},
+    ("III", "V"): {
+        (0, 0): 10,
+        (0, 1): -3,
+        (1, 0): -7.5,
+        (1, 1): 10},
+    ("III", "V7"): {
+        (0, 0): 10,
+        (0, 1): -6,
+        (1, 0): -5.5,
+        (1, 1): 10},
+    ("III", "VI"): {
+        (0, 0): 10,
+        (0, 1): -7,
+        (1, 0): -5.5,
+        (1, 1): 10},
+    ("IV", "V"): {
+        (0, 0): 10,
+        (0, 1): -4,
+        (1, 0): -5.5,
+        (1, 1): 10},
+    ("IV", "V7"): {
+        (0, 0): 10,
+        (0, 1): -7.5,
+        (1, 0): -7,
+        (1, 1): 10},
+    ("IV", "VI"): {
+        (0, 0): 10,
+        (0, 1): -5.5,
+        (1, 0): -6,
+        (1, 1): 10},
+    ("V", "V7"): {
+        (0, 0): 10,
+        (0, 1): -5.5,
+        (1, 0): 0,
+        (1, 1): 10},
+    ("V", "VI"): {
+        (0, 0): 10,
+        (0, 1): -7.5,
+        (1, 0): -7,
+        (1, 1): 10},
+    ("V7", "VI"): {
+        (0, 0): 10,
+        (0, 1): 5,
+        (1, 0): 0,
         (1, 1): 10},
     ("V7", "VIIdim7"): {
         (0, 0): 10,
-        (0, 1): 0.9,
-        (1, 0): .95,
+        (0, 1): -5.5,
+        (1, 0): -7.5,
         (1, 1): 10},
     ("VI", "VIIdim7"): {
         (0, 0): 10,
-        (0, 1): 1,
-        (1, 0): 10,
+        (0, 1): 5,
+        (1, 0): 0,
         (1, 1): 10},
 }
+
+edges = list(potentials.keys())
+vertices = list(set([vertex for edge in edges for vertex in edge]))
+
+def plot_chords(potentials):
+
+    graph = nx.Graph()
+    graph.add_nodes_from(vertices)
+    graph.add_edges_from(edges)
+    nx.draw_circular(graph, with_labels=True)
+
+    plt.show()
+
+plot_chords(potentials)
 
 
 def find_next_state(samples):
     '''
     Find lowest energy state with a single note
     '''
-
     for sample in samples:
         for k,v in sample.items():
-            if v == 0:
+            if v == 1:
                 return k
 
 
@@ -153,22 +169,34 @@ def generate_progression_sequence(potentials, start, length):
     length: length of sequence
     '''
     network = dnx.markov_network(potentials)
-    sampler = dimod.RandomSampler()
+    sampler = dimod.RandomSampler()#SimulatedAnnealingSampler()#ExactSolver()#
     sequence = [start]
 
     current = start
     for i in range(length):
+
+        outgoing_edges = [edge for edge in edges if current in edge]
+        #print(outgoing_edges)
+        # list of neighbors includes current node
+        neighbors = list(set([vertex for edge in outgoing_edges for vertex in edge]))
+        #print(neighbors)
+        non_neighbors = [vertex for vertex in vertices if vertex not in neighbors]
+        fixed_variables = {vertex: 0 for vertex in non_neighbors}
+        fixed_variables[current] = 0
+        #print(fixed_variables)
+
         samples = dnx.sample_markov_network(
             network,
             sampler,
-            fixed_variables={current: 1}
+            fixed_variables
             )
+        print(samples)
         current = find_next_state(samples)
         sequence.append(current)
 
     return sequence
 
-track = generate_progression_sequence(potentials, "VIIdim7", 30)
+track = generate_progression_sequence(potentials, "VI", 40)
 
 print("TRACK: ", track)
 
