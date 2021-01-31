@@ -1,7 +1,6 @@
 import dimod
 import dwave_networkx as dnx
 import numpy as np
-import mingus 
 import mingus.core.progressions as progressions
 from mingus.containers import NoteContainer
 from mingus.midi import fluidsynth
