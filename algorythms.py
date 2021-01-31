@@ -78,6 +78,8 @@ def cli():
         } for edge in graph_edges
     }
 
+    print(potentials)
+
     edges = list(potentials.keys())
     vertices = list(set([vertex for edge in edges for vertex in edge]))
 
