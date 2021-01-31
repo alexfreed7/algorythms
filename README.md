@@ -1,6 +1,6 @@
 # Algorhythms
 
-Generate music with a quantum computer!
+Generate music with a quantum computer! This was completed for the [iQuHack 2021](https://www.iquise.mit.edu/iQuHACK/) Hackathon.
 
 ## Abstract
 
