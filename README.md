@@ -1,6 +1,6 @@
 # Algorhythms
 
-Generate music with a quantum computer! This was completed for the [iQuHack 2021](https://www.iquise.mit.edu/iQuHACK/) Hackathon.
+Generate music with a quantum computer! This was completed for the [iQuHack 2021](https://www.iquise.mit.edu/iQuHACK/) Hackathon. This is the [repo](https://github.com/iQuHACK/2021_Algorhythms) used for the hackathon.
 
 ## Abstract
 
@@ -93,7 +93,10 @@ We consider the `1` state to be the chord being played. The `(0,0)` and `(1,1)` 
 
 ## How it works
 
-Without spoiling the demo, our algorithm works by creating a random distribution of potentials for the chord Markov Random Field for each chord we want to generate, and then sampling that distribution for the lowest energy state. The chord with the lowest potential is our next chord! This is done for each chord. We then encode the chords into a MIDI file, which is returned by the user, and can be opened in software such as MuseScore in order to play it back, and even see the musical score!
+Our algorithm works by creating a random distribution of potentials for the chord Markov Random Field for each chord we want to generate, and then sampling that distribution for the lowest energy state. The chord with the lowest potential is our next chord! This is done for each chord. We then encode the chords into a MIDI file, which is returned by the user, and can be opened in software such as MuseScore in order to play it back, and even see the musical score!
+
+Here is a demo:
+[![Algorhythms demo](https://img.youtube.com/vi/KgYJ4NS7EHU/0.jpg)](https://www.youtube.com/watch?v=KgYJ4NS7EHU)
 
 ## Setup
 First, you need to [setup Ocean](https://docs.ocean.dwavesys.com/en/stable/overview/install.html) in order to use D-Wave. Make sure you activate the `virtualenv` before proceeding.
