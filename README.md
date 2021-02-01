@@ -95,7 +95,6 @@ We consider the `1` state to be the chord being played. The `(0,0)` and `(1,1)` 
 
 Our algorithm works by creating a random distribution of potentials for the chord Markov Random Field for each chord we want to generate, and then sampling that distribution for the lowest energy state. The chord with the lowest potential is our next chord! This is done for each chord. We then encode the chords into a MIDI file, which is returned by the user, and can be opened in software such as MuseScore in order to play it back, and even see the musical score!
 
-Here is a demo:
 [![Algorhythms demo](https://img.youtube.com/vi/KgYJ4NS7EHU/0.jpg)](https://www.youtube.com/watch?v=KgYJ4NS7EHU)
 
 ## Setup
