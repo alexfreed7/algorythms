@@ -16,7 +16,11 @@ import networkx as nx
 from pyfiglet import Figlet
 from PyInquirer import style_from_dict, Token, prompt
 
-graph_edges = [('I', 'II'), ('I', 'III'), ('I', 'IV'), ('I', 'V'), ('I', 'V'), ('I', 'VI'), ('I', 'VIIdim'), ('II', 'IV'), ('II', 'V'), ('II', 'V'), ('II', 'VI'), ('II', 'VIIdim'), ('III', 'IV'), ('III', 'V'), ('III', 'V'), ('III', 'VI'), ('IV', 'V'), ('IV', 'V'), ('IV', 'VI'), ('V', 'VI'), ('V', 'VI'), ('V', 'VIIdim'), ('VI', 'VIIdim')]
+chord_edges = [('I', 'II'), ('I', 'III'), ('I', 'IV'), ('I', 'V'), ('I', 'V'), ('I', 'VI'), ('I', 'VIIdim'), ('II', 'IV'), ('II', 'V'), ('II', 'V'), ('II', 'VI'), ('II', 'VIIdim'), ('III', 'IV'), ('III', 'V'), ('III', 'V'), ('III', 'VI'), ('IV', 'V'), ('IV', 'V'), ('IV', 'VI'), ('V', 'VI'), ('V', 'VI'), ('V', 'VIIdim'), ('VI', 'VIIdim')]
+chord_edges_minor = [(pair[0].lower(),pair[1].lower()) for pair in chord_edges]
+
+note_edges = [('0','2'), ('0', '4'), ('0', '7'), ('0', '9'), ('2', '7'), ('2', '9'),  ('4', '7'),  ('4', '9'),  ('7', '9')]
+note_edges_minor = [ ('0', '3'), ('0', '5'), ('0', '7'), ('0', '7'),  ('0', '10'),   ('3', '5'), ('3', '7'), ('3', '7'),  ('5', '7'), ('5', '7'),('7', '10')]
 
 def cli():
     style = style_from_dict({
@@ -52,6 +56,12 @@ def cli():
         'name': 'sampler',
         'message': 'Which solver do you want to use?',
         'choices': ['Local', 'Leap']
+        },
+        {
+        'type': 'rawlist',
+        'name': 'scale',
+        'message': 'Happy or Sad?',
+        'choices': ['Happy', 'Sad']
     },
     ]
 
@@ -59,6 +69,18 @@ def cli():
 
     file = str(answers['title']) + ".midi"
     duration = int(answers['duration'])
+
+    scales = {
+        'Happy':chord_edges,
+        'Sad': chord_edges_minor
+    }
+    scale = scales[answers['scale']]
+
+    melodys = {
+        'Happy':note_edges,
+        'Sad':note_edges_minor
+    }
+    melody = melodys[answers['scale']]
 
     samplers = {
         'Local': ExactSolver,
@@ -144,7 +166,6 @@ def play_track(track, file, bpm):
     track += "I"
     song = Track()
     for progression in track:
-        p = progressions.to_chords(progression, "C")
         chord = NoteContainer()
         p = progressions.to_chords(progression, "C")[0]
         for note in p:
