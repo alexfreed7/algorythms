@@ -7,7 +7,8 @@ import numpy as np
 import random
 
 import mingus.core.progressions as progressions
-from mingus.containers import NoteContainer, Track, Note
+from mingus.containers import NoteContainer, Track, Note, Bar, Composition
+import mingus.core.notes as mingus_notes
 from mingus.midi import midi_file_out
 
 import matplotlib.pyplot as plt
@@ -67,7 +68,8 @@ def cli():
 
     answers = prompt(questions, style=style)
 
-    file = str(answers['title']) + ".midi"
+    title = str(answers['title'])
+    file = title + ".midi"
     duration = int(answers['duration'])
 
     scales = {
@@ -88,10 +90,28 @@ def cli():
     }
     sampler = samplers[answers['sampler']]
 
-    bpm = 90
+    tempo = {
+        'Happy': 100,
+        'Sad': 60
+    }
+
+    bpm = tempo[answers['scale']]
     number_notes = int(bpm * 1/60 * duration)    # beats per second
 
-    potentials = {
+    chord_potentials = generate_potentials(scale)
+    melody_potentials = generate_potentials(melody)
+
+    print('Sending to sampler...')
+    chord_sequence = generate_note_sequence(chord_potentials, number_notes, sampler)
+    melody_sequence = generate_note_sequence(melody_potentials, number_notes * 2, sampler)
+
+    save_track(chord_sequence, melody_sequence, file, bpm, title)
+
+    print('Done! Your quantum song can be found in "' + file + '"\n')
+    print('You can open it in MuseScore to listen to it and see the score!')
+
+def generate_potentials(graph_edges):
+    return {
         edge: {
             (0, 0): 10,
             (0, 1): random_number(),
@@ -99,20 +119,6 @@ def cli():
             (1, 1): 10
         } for edge in graph_edges
     }
-
-    edges = list(potentials.keys())
-    vertices = list(set([vertex for edge in edges for vertex in edge]))
-
-    start = random.choice(vertices)
-
-    print('Sending to sampler...')
-    track = generate_progression_sequence(potentials, start, number_notes, sampler)
-
-    play_track(track, file, bpm)
-
-    print('Done! Your quantum song can be found in "' + file + '"\n')
-    print('You can open it in MuseScore to listen to it and see the score!')
-
 
 def find_next_state(samples):
     '''
@@ -123,7 +129,7 @@ def find_next_state(samples):
         return random.choice(low_energy_states)
 
 
-def generate_progression_sequence(potentials, start, length, solver):
+def generate_note_sequence(potentials, length, solver):
     '''
     Generate a sequence of notes
 
@@ -131,12 +137,14 @@ def generate_progression_sequence(potentials, start, length, solver):
     start: the starting note
     length: length of sequence
     '''
-    network = dnx.markov_network(potentials)
-    sampler = solver()#LeapHybridSampler()#dimod.ExactSolver()
-    sequence = [start]
-
     edges = list(potentials.keys())
     vertices = list(set([vertex for edge in edges for vertex in edge]))
+
+    start = random.choice(vertices)
+
+    network = dnx.markov_network(potentials)
+    sampler = solver()
+    sequence = [start]
 
     current = start
     for i in range(length):
@@ -151,28 +159,58 @@ def generate_progression_sequence(potentials, start, length, solver):
             sampler,
             fixed_variables
             )
-        progress = int(i/length * 100)
-        if progress != 0:
-            print(str(progress) + "%")
+        # progress = int(i/length * 100)
+        # if progress != 0:
+        #     print(str(progress) + "%")
         current = find_next_state(samples)
         sequence.append(current)
-    print('100%')
+    #print('100%')
 
     return sequence
 
 
-def play_track(track, file, bpm):
-    track += "V"
-    track += "I"
-    song = Track()
-    for progression in track:
-        chord = NoteContainer()
-        p = progressions.to_chords(progression, "C")[0]
-        for note in p:
-            chord.add_note(note, dynamics={'velocity': np.random.randint(127)})
-        chord.add_note(note, dynamics={'velocity': np.random.randint(127)})
-        song.add_notes(chord)
-    midi_file_out.write_Track(file, song, bpm)
+def save_track(chords, melody, file, bpm, title):
+    chords += "V"
+    chords += "I"
+    left_hand = Track()
+    right_hand = Track()
+
+    melody = [mingus_notes.int_to_note(int(n)) for n in melody]
+
+    print('melody: ', melody)
+    print('chords: ', chords)
+
+
+    for i in range(len(chords)-2):
+        left_bar = Bar()
+        right_bar = Bar()
+        bar_chords = chords[i:i+2]  # 2 chords per bar
+        bar_notes = melody[i:i+4]
+
+        # add 4 notes to bar
+        for note in bar_notes:
+            n = NoteContainer()
+            n.add_note(note, dynamics={'velocity': np.random.randint(127)})
+            right_bar.place_notes(n, 4)
+
+        # add 2 chords to bar
+        for progression in bar_chords:
+            chord = NoteContainer()
+            p = progressions.to_chords(progression, "C")[0] # ex:['C', 'E', 'G']
+            for note in p:
+                note += '-3'
+                chord.add_note(note)
+            left_bar.place_notes(chord, 2)
+        left_hand.add_bar(left_bar)
+        right_hand.add_bar(right_bar)
+
+    c = Composition()
+    c.set_author('P. Dirac')
+    c.set_title(title)
+    c.add_track(right_hand)
+    c.add_track(left_hand)
+
+    midi_file_out.write_Composition(file, c, bpm)
 
 def random_number():
     return -1**np.random.randint(10) * np.random.rand() * 10
