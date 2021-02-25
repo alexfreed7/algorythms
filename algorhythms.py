@@ -18,7 +18,8 @@ from pyfiglet import Figlet
 from PyInquirer import style_from_dict, Token, prompt
 
 chord_edges = [('I', 'II'), ('I', 'III'), ('I', 'IV'), ('I', 'V'), ('I', 'V'), ('I', 'VI'), ('I', 'VIIdim'), ('II', 'IV'), ('II', 'V'), ('II', 'V'), ('II', 'VI'), ('II', 'VIIdim'), ('III', 'IV'), ('III', 'V'), ('III', 'V'), ('III', 'VI'), ('IV', 'V'), ('IV', 'V'), ('IV', 'VI'), ('V', 'VI'), ('V', 'VI'), ('V', 'VIIdim'), ('VI', 'VIIdim')]
-chord_edges_minor = [(pair[0].lower(),pair[1].lower()) for pair in chord_edges]
+chord_edges_minor = [('i', 'iidim'), ('i', 'III'), ('i', 'iv'), ('i', 'v'), ('i', 'VI'), ('i', 'VII'), ('iidim', 'iv'), ('iidim', 'v'), ('ii', 'v'), ('ii', 'VI'), ('ii', 'VII'), ('III', 'iv'), ('III', 'v'), ('III', 'VI'), ('iv', 'v'), ('iv', 'VI'), ('v', 'VI'), ('v', 'VII'), ('VI', 'VII')]
+## [(pair[0].lower(),pair[1].lower()) for pair in chord_edges]
 
 note_edges = [('0','2'), ('0', '4'), ('0', '7'), ('0', '9'), ('2', '7'), ('2', '9'),  ('4', '7'),  ('4', '9'),  ('7', '9')]
 note_edges_minor = [ ('0', '3'), ('0', '5'), ('0', '7'), ('0', '7'),  ('0', '10'),   ('3', '5'), ('3', '7'), ('3', '7'),  ('5', '7'), ('5', '7'),('7', '10')]
